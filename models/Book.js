@@ -8,7 +8,8 @@ const bookSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   publicationDate: {type: Date, required: true},
   publishingHouse: {type: String, require:true},
-  seller: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  seller: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  active: {type: Boolean, default: true}
 });
 
 module.exports = mongoose.model('Book', bookSchema);

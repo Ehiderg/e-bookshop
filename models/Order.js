@@ -5,7 +5,8 @@ const orderSchema = new mongoose.Schema({
   books: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book', required: true }],
   total: { type: Number, required: true },
   creationDate: {type: Date, required: true},
-  status: { type: String, default: 'En progreso' }
+  status: { type: String, default: 'En progreso' },
+  active: {type: Boolean, default: true}
 });
 
 module.exports = mongoose.model('Order', orderSchema);
