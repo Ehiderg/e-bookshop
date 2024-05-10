@@ -18,7 +18,7 @@ router.get("/:id", getUserByID);
 router.post("/", createUserHandler);
 
 // Actualizar un usuario existente
-router.put("/:id", updateUserHandler);
+router.patch("/:id", updateUserHandler);
 
 // Eliminar un usuario (soft delete)
 router.delete("/:id", softDeleteUserHandler);

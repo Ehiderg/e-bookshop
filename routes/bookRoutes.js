@@ -6,7 +6,7 @@ const {
   postBook,
   patchBook,
   deleteBook,
-} = require("./books.controller");
+} = require("../controllers/bookController");
 
 // Rutas para libros
 router.get("/:id", getBookByID);

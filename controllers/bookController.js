@@ -4,7 +4,7 @@ const {
     createBook,
     updateBook,
     removeBook,
-  } = require("./book.actions");
+  } = require("../actions/bookAction");
   
   async function getBookByID(req, res) {
     try {
@@ -27,7 +27,7 @@ const {
   
   async function postBook(req, res) {
     try {
-      const newBook = await createBook(req.body);
+      const newBook = await createBook(req.body, req.user.id); // req.user.id contiene el ID del usuario que está creando el libro
       res.status(201).json(newBook);
     } catch (error) {
       res.status(400).json({ message: error.message });

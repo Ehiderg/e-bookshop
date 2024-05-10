@@ -24,8 +24,11 @@ async function readBooks(queryParams) {
   }
 }
 
-async function createBook(bookData, token) {
+async function createBook(bookData, userID) {
   try {
+    // Establecer el campo "seller" como el ID del usuario que está creando el libro
+    bookData.seller = userID;
+    
     const newBook = await Book.create(bookData);
     return newBook;
   } catch (error) {
