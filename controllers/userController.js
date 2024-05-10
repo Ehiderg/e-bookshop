@@ -1,37 +1,34 @@
 const jwt = require('jsonwebtoken');
 const argon2 = require('argon2');
 const {
-  readUsers,
   readUserByID,
+  readUserByActive,
   createUser,
   updateUser,
   softDeleteUser,
 } = require('../actions/userAction');
 
-async function getAllUsers(req, res) {
-  try {
-    const users = await readUsers();
 
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
 
 async function getUserByID(req, res) {
   try {
     const user = await readUserByID(req.params.id);
+      if (!user.active) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+      res.status(200).json(user);
+    
 
-    res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
 
   }
 }
 
+
 async function createUserHandler(req, res) {
   try {
-    const { fullName, cedula, email, password, address} = req.body;
+    const { fullName, cedula, email, password, address } = req.body;
 
     // Hash de la contraseña
     const hashedPassword = await argon2.hash(password);
@@ -95,7 +92,7 @@ async function updateUserHandler(req, res) {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-  
+
 }
 
 async function softDeleteUserHandler(req, res) {
@@ -119,7 +116,7 @@ async function softDeleteUserHandler(req, res) {
 
       const deletedUser = await softDeleteUser(userId);
 
-      if (!deletedUser || !deletedUser.active) {
+      if (!deletedUser.active) {
         return res.status(404).json({ message: 'Usuario no encontrado' });
       }
 
@@ -130,9 +127,9 @@ async function softDeleteUserHandler(req, res) {
   }
 }
 
-module.exports = {  getUserByID,
-  getAllUsers,
+module.exports = {
+  getUserByID,
   createUserHandler,
   updateUserHandler,
-  softDeleteUserHandler, 
+  softDeleteUserHandler,
 };

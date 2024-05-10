@@ -2,14 +2,13 @@ const express = require("express");
 const router = express.Router();
 const {
   getUserByID,
-  getAllUsers,
   createUserHandler,
   updateUserHandler,
   softDeleteUserHandler,
 } = require("../controllers/userController");
 
-// Obtener todos los usuarios
-router.get("/", getAllUsers);
+
+
 
 // Obtener un usuario por ID
 router.get("/:id", getUserByID);

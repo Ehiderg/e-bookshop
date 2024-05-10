@@ -3,27 +3,14 @@ const User = require("../models/User");
 async function readUserByID(userID) {
   try {
     console.log(userID);
-    const user = await User.findOne({cedula: userID});
-    if (!user || !user.active) {
-      throw new Error("No existe el usuario");
-    }
+    const user = await User.findOne({cedula: userID}, {password: 0}, {active: 0});
+
     return user;
   } catch (error) {
     throw new Error("Error al buscar el usuario por ID");
   }
 }
 
-async function readUsers() {
-  try {
-    const users = await User.find();
-    if (!users) {
-      throw new Error("No se encontraron usuarios");
-    }
-    return users;
-  } catch (error) {
-    throw new Error("Error al buscar usuarios");
-  }
-}
 
 async function createUser(userData) {
   try {
@@ -50,18 +37,15 @@ async function updateUser(userID, userData) {
 
 async function softDeleteUser(userID) {
   try {
-    const deletedUser = await User.updateOne({cedula: userID}, {active: false});
-    if (!deletedUser || !deletedUser.active) {
-     throw new Error("No se pudo eliminar el usuario");
-    } 
+    const deletedUser = await User.findOneAndUpdate({cedula: userID}, {active: false});
+    console.log(deletedUser);
     return deletedUser;
   } catch (error) {
-    throw new Error("Error al eliminar el usuario");
+    throw new Error(error);
   }
 }
 
 module.exports = {
-  readUsers,
   readUserByID,
   createUser,
   updateUser,
