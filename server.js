@@ -11,16 +11,32 @@ app.use(bodyParser.json());
 
 // Routes
 const userRoutes = require('./routes/userRoutes');
-const bookRoutes = require('./routes/bookRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-app.use('/api/users', userRoutes);
-app.use('/api/books', bookRoutes);
-app.use('/api/orders', orderRoutes);
+//const bookRoutes = require('./routes/bookRoutes');
+//const orderRoutes = require('./routes/orderRoutes');
+app.use('/users', userRoutes);
+//app.use('/books', bookRoutes);
+//app.use('/orders', orderRoutes);
 
 // MongoDB Connection
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log(err));
+const uri = process.env.DATABASE_URL;
+
+// Opciones del cliente
+const clientOptions = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+};
+
+async function connectToDatabase() {
+  try {
+    // Conectar a la base de datos
+    await mongoose.connect(uri, clientOptions);
+    console.log('MongoDB Connected');
+  } catch (error) {
+    console.error('Error al conectar a la base de datos:', error);
+  }
+}
+
+connectToDatabase();
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
