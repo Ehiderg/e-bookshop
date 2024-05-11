@@ -14,7 +14,10 @@ async function authenticateUser(email, password) {
   if (!isValidPassword) {
     throw new Error('Contraseña incorrecta');
   }
-
+  if (!user.active) {
+    throw new Error('Usuario inactivo');
+  }
+  
   const token = jwt.sign({ id: user.cedula }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
   return token;

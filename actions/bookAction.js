@@ -2,7 +2,7 @@ const Book = require("../models/Book");
 
 async function readBookByID(bookID) {
   try {
-    const book = await Book.findById(bookID);
+    const book = await Book.findOne(bookID);
     if (!book || !book.active) {
       throw new Error("No existe el libro");
     }

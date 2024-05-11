@@ -6,20 +6,21 @@ const {
   updateUserHandler,
   softDeleteUserHandler,
 } = require("../controllers/userController");
+const { verifyToken } = require("../controllers/authController");
 
 
 
 
 // Obtener un usuario por ID
-router.get("/:id", getUserByID);
+router.get("/:id",verifyToken, getUserByID);
 
 // Crear un nuevo usuario
 router.post("/", createUserHandler);
 
 // Actualizar un usuario existente
-router.patch("/:id", updateUserHandler);
+router.patch("/:id", verifyToken,updateUserHandler);
 
 // Eliminar un usuario (soft delete)
-router.delete("/:id", softDeleteUserHandler);
+router.delete("/:id", verifyToken,softDeleteUserHandler);
 
 module.exports = router;

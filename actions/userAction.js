@@ -1,15 +1,20 @@
 const User = require("../models/User");
 
-async function readUserByID(userID) {
+async function readUserByID(userID, active=true) {
   try {
-    console.log(userID);
-    const user = await User.findOne({cedula: userID}, {password: 0}, {active: 0});
+    console.log(active);
+    const user = await User.findOne({ cedula: userID, active: active }, { password: 0 });
 
+    if (!user) {
+      throw new Error("No existe el usuario");
+    }
+    
     return user;
   } catch (error) {
     throw new Error("Error al buscar el usuario por ID");
   }
 }
+
 
 
 async function createUser(userData) {
@@ -23,8 +28,7 @@ async function createUser(userData) {
 
 async function updateUser(userID, userData) {
   try {
-    console.log(userID);
-    console.log(userData);
+
     const updatedUser = await User.findOneAndUpdate({cedula: userID}, userData, { new: true });
     if (!updatedUser || !updatedUser.active) {
       throw new Error("No se pudo actualizar el usuario");
