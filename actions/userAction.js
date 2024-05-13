@@ -2,7 +2,7 @@ const User = require("../models/User");
 
 async function readUserByID(userID, active=true) {
   try {
-    console.log(active);
+ 
     const user = await User.findOne({ cedula: userID, active: active }, { password: 0 });
 
     if (!user) {

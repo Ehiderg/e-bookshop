@@ -1,8 +1,8 @@
 const Book = require("../models/Book");
 
-async function readBookByID(bookID) {
+async function readBookByID(bookID, active=true) {
   try {
-    const book = await Book.findOne(bookID);
+    const book = await Book.findOne({ _id: bookID, active: active });
     if (!book || !book.active) {
       throw new Error("No existe el libro");
     }
@@ -12,9 +12,9 @@ async function readBookByID(bookID) {
   }
 }
 
-async function readBooks(queryParams) {
+async function readBooks(queryParams, active=true) {
   try {
-    const books = await Book.find(queryParams);
+    const books = await Book.find({ ...queryParams, active: active });
     if (!books) {
       throw new Error("No se encontraron libros");
     }
@@ -26,9 +26,9 @@ async function readBooks(queryParams) {
 
 async function createBook(bookData, userID) {
   try {
-    // Establecer el campo "seller" como el ID del usuario que está creando el libro
+    // Establecer el campo "seller" como el ID del usuario que está creando el 
     bookData.seller = userID;
-    
+    console.log(bookData);
     const newBook = await Book.create(bookData);
     return newBook;
   } catch (error) {
@@ -36,7 +36,7 @@ async function createBook(bookData, userID) {
   }
 }
 
-async function updateBook(bookID, bookData, token) {
+async function updateBook(bookID, bookData) {
   try {
     const updatedBook = await Book.findByIdAndUpdate(bookID, bookData, { new: true });
     if (!updatedBook || !updatedBook.active) {
@@ -48,10 +48,10 @@ async function updateBook(bookID, bookData, token) {
   }
 }
 
-async function removeBook(bookID, token) {
+async function removeBook(bookID) {
   try {
     const deletedBook = await Book.findByIdAndUpdate(bookID, { active: false }, { new: true });
-    if (!deletedBook || !deletedBook.active) {
+    if (!deletedBook) {
       throw new Error("No se pudo eliminar el libro");
     }
     return deletedBook;

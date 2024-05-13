@@ -22,7 +22,7 @@ async function verifyToken(req, res, next) {
       if (error) {
         return res.status(403).json({ message: 'Token de autenticación inválido' });
       }
-      req.body.userId = jwt.decode(token.split(' ')[1]).id;
+      req.headers.userId = jwt.decode(token.split(' ')[1]).id;
       next();
     });
   } catch (error) {

@@ -15,9 +15,12 @@ async function getUserByID(req, res) {
   try {
 
     const active = req.query.active;
-    const user = await readUserByID(req.params.id, !active);
-    
+    const userId = req.headers.userId;
+    if (userId !== parseInt(req.params.id)) {
+      return res.status(403).json({ message: 'No tienes permiso para ver usuarios' });
+    }
 
+    const user = await readUserByID(req.params.id, !active);
     res.status(200).json(user);
 
   } catch (error) {
@@ -51,7 +54,7 @@ async function createUserHandler(req, res) {
 async function updateUserHandler(req, res) {
   try {
 
-    const userId = req.body.userId;
+    const userId = req.headers.userId;
     console.log(userId);
     if (userId !== parseInt(req.params.id)) {
       return res.status(403).json({ message: 'No tienes permiso para actualizar este usuario' });
@@ -84,7 +87,7 @@ async function updateUserHandler(req, res) {
 async function softDeleteUserHandler(req, res) {
   try {
 
-    const userId = req.body.userId;
+    const userId = req.headers.userId;
     if (userId !== parseInt(req.params.id)) {
       return res.status(403).json({ message: 'No tienes permiso para eliminar este usuario' });
     }

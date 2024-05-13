@@ -7,12 +7,13 @@ const {
   patchBook,
   deleteBook,
 } = require("../controllers/bookController");
+const { verifyToken } = require("../controllers/authController");
 
 // Rutas para libros
 router.get("/:id", getBookByID);
 router.get("/", getBooks);
-router.post("/", postBook);
-router.patch("/:id", patchBook);
-router.delete("/:id", deleteBook);
+router.post("/", verifyToken,postBook);
+router.patch("/:id", verifyToken,patchBook);
+router.delete("/:id", verifyToken,deleteBook);
 
 module.exports = router;
