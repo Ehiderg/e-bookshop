@@ -4,17 +4,24 @@ const {
     readOrderById,
     updateOrder,
     removeOrder
-} = require('../actions/orderAction'); 
+} = require('../actions/orderAction');
 const { readBookByID, removeBook } = require('../actions/bookAction');
 
 async function getOrderById(req, res) {
     try {
         const active = req.query.active;
         const order = await readOrderById(req.params.id, !active);
-        if (!order.active) {
-            return res.status(404).json({ message: 'Orden no encontrada' });
+        const sellerID = order.seller;
+        const buyerID = order.buyer;
+        console.log(sellerID);
+        console.log(buyerID);
+        console.log(req.headers.userId);
+        if (sellerID === req.headers.userId || buyerID === req.headers.userId) {
+            return res.status(200).json(order);
+        } else {
+            return res.status(403).json({ message: 'No tienes permiso para ver esta orden' });
         }
-        return res.status(200).json(order);
+        
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -43,10 +50,10 @@ async function postOrder(req, res) {
 
         const bookDetails = await Promise.all(bookDetailsPromises);
 
-  
+
         const total = bookDetails.reduce((acc, book) => acc + book.price, 0);
 
-      
+
         const isSeller = bookDetails.some(book => buyerID === book.seller);
         if (isSeller) {
             return res.status(403).json({ message: 'No puedes comprar tus propios libros' });
@@ -56,7 +63,7 @@ async function postOrder(req, res) {
         if (!isAvailable) {
             return res.status(404).json({ message: 'Uno o más libros no están disponibles' });
         }
-     
+
         const newOrder = await createOrder({ books: bookIDs, seller: bookDetails[0].seller, buyer: buyerID, total: total }, buyerID);
         console.log(newOrder);
         res.status(201).json(newOrder);
@@ -70,21 +77,21 @@ async function patchOrder(req, res) {
     try {
         let updatedOrder = {};
         const orderId = req.params.id;
-        
+
         const order = await readOrderById(orderId);
-        
+
         if (order.buyer === req.headers.userId) {
             if (!order.active) {
                 return res.status(400).json({ message: 'El pedido no está activo' });
             }
-            
+
             const newStatus = req.body.status;
-            
-           
+
+
             if (newStatus.toLowerCase() !== 'completado') {
                 return res.status(400).json({ message: 'Estado de pedido no válido' });
             }
-            
+
 
             order.status = newStatus;
 
@@ -94,28 +101,30 @@ async function patchOrder(req, res) {
                 return bookDeletes;
             });
 
-        } else{
-            if(order.seller === req.headers.userId){
+        } else {
+            if (order.seller === req.headers.userId) {
                 if (!order.active) {
                     return res.status(400).json({ message: 'El pedido no está activo' });
                 }
-                
+
 
                 const newStatus = req.body.status;
-                
-                
+
+
                 if (newStatus.toLowerCase() !== 'cancelado') {
                     return res.status(400).json({ message: 'Estado de pedido no válido' });
                 }
-                
+
                 order.status = newStatus;
 
                 updatedOrder = await updateOrder(orderId, order);
-            }else{{
-                return res.status(403).json({ message: 'No tienes permiso para actualizar esta orden' });
-            }}
+            } else {
+                {
+                    return res.status(403).json({ message: 'No tienes permiso para actualizar esta orden' });
+                }
+            }
         }
-        
+
         res.status(200).json(updatedOrder);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -128,11 +137,11 @@ async function deleteOrder(req, res) {
         const order = await readOrderById(req.params.id);
         const buyerID = order.buyer;
         const sellerID = order.seller;
-  
+
         if (buyerID === req.headers.userId || sellerID === req.headers.userId) {
             const deletedOrder = await removeOrder(req.params.id);
             res.status(200).json(deletedOrder);
-        }else{
+        } else {
             return res.status(403).json({ message: 'No tienes permiso para eliminar esta orden' });
         }
     } catch (error) {
@@ -140,10 +149,10 @@ async function deleteOrder(req, res) {
     }
 }
 
-module.exports = { 
-    getOrderById, 
-    getOrders, 
-    postOrder, 
-    patchOrder, 
-    deleteOrder 
+module.exports = {
+    getOrderById,
+    getOrders,
+    postOrder,
+    patchOrder,
+    deleteOrder
 };

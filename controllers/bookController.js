@@ -13,10 +13,6 @@ async function getBookByID(req, res) {
     const active = req.query.active;
     const book = await readBookByID(req.params.id, !active);
 
-    if (!book.active) {
-      return res.status(404).json({ message: 'libro no encontrado' });
-    }
-
     return res.status(200).json(book);
 
   } catch (error) {

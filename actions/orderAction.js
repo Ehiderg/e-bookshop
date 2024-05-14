@@ -4,7 +4,7 @@ const { readBookByID } = require('./bookAction');
 async function readOrderById(orderID, active=true) {
   try {
     const order = await Order.findOne({ _id: orderID, active: active });
-    if (!order || !order.active) {
+    if (!order) {
       throw new Error('No existe la orden');
     }
     return order;
