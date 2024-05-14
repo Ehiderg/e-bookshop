@@ -71,24 +71,21 @@ async function patchOrder(req, res) {
         let updatedOrder = {};
         const orderId = req.params.id;
         
-        // Obtener el pedido por su ID
         const order = await readOrderById(orderId);
         
-        // Verificar si el usuario que realiza la solicitud es el comprador del pedido
         if (order.buyer === req.headers.userId) {
             if (!order.active) {
                 return res.status(400).json({ message: 'El pedido no está activo' });
             }
             
-            // Obtener el nuevo estado del pedido desde el cuerpo de la solicitud
             const newStatus = req.body.status;
             
-            // Verificar si el nuevo estado es válido
+           
             if (newStatus.toLowerCase() !== 'completado') {
                 return res.status(400).json({ message: 'Estado de pedido no válido' });
             }
             
-            // Actualizar el estado del pedido
+
             order.status = newStatus;
 
             updatedOrder = await updateOrder(orderId, order);
@@ -96,21 +93,21 @@ async function patchOrder(req, res) {
                 const book = await removeBook(bookId);
                 return bookDeletes;
             });
+
         } else{
             if(order.seller === req.headers.userId){
                 if (!order.active) {
                     return res.status(400).json({ message: 'El pedido no está activo' });
                 }
                 
-                // Obtener el nuevo estado del pedido desde el cuerpo de la solicitud
+
                 const newStatus = req.body.status;
                 
-                // Verificar si el nuevo estado es válido
+                
                 if (newStatus.toLowerCase() !== 'cancelado') {
                     return res.status(400).json({ message: 'Estado de pedido no válido' });
                 }
                 
-                // Actualizar el estado del pedido
                 order.status = newStatus;
 
                 updatedOrder = await updateOrder(orderId, order);
@@ -130,11 +127,14 @@ async function deleteOrder(req, res) {
     try {
         const order = await readOrderById(req.params.id);
         const buyerID = order.buyer;
-        if (buyerID !== req.headers.userId) {
+        const sellerID = order.seller;
+  
+        if (buyerID === req.headers.userId || sellerID === req.headers.userId) {
+            const deletedOrder = await removeOrder(req.params.id);
+            res.status(200).json(deletedOrder);
+        }else{
             return res.status(403).json({ message: 'No tienes permiso para eliminar esta orden' });
         }
-        const deletedOrder = await removeOrder(req.params.id);
-        res.status(200).json(deletedOrder);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
