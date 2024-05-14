@@ -14,17 +14,23 @@ async function readOrderById(orderID, active=true) {
     }
 }
 
-async function readOrders(queryParams, active=true) {
+async function readOrders(queryParams, active = true) {
   try {
-    const orders = await Order.find({ ...queryParams, active: active });
-    if (!orders) {
-      throw new Error('No se encontraron ordenes');
-    }
-    return orders;
+      const filter = { ...queryParams, active: active };
+
+      console.log(filter);
+      const orders = await Order.find(filter);
+
+      if (!orders || orders.length === 0) {
+          throw new Error('No se encontraron órdenes');
+      }
+
+      return orders;
   } catch (error) {
-    throw new Error('Error al buscar ordenes');
+      throw new Error('Error al buscar órdenes');
   }
 }
+
 
 async function createOrder(orderData, userID) {
     try {

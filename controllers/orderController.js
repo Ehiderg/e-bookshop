@@ -30,13 +30,37 @@ async function getOrderById(req, res) {
 async function getOrders(req, res) {
     try {
         const queryParams = req.query;
-        const active = req.query.active;
-        const orders = await readOrders(queryParams, !active);
+        const fromDate = queryParams.fromDate; // Fecha de inicio del filtro
+        const toDate = queryParams.toDate; // Fecha de fin del filtro
+        const status = queryParams.status; // Estado del pedido
+
+        // Construir el objeto de filtro basado en los parámetros proporcionados
+        const filter = {};
+
+        // Agregar filtro por fecha de creación si se proporcionan fromDate y toDate
+        if (fromDate && toDate) {
+            filter.creationDate = {
+                $gte: new Date(fromDate), // Fecha de creación debe ser mayor o igual que fromDate
+                $lte: new Date(toDate) // Fecha de creación debe ser menor o igual que toDate
+            };
+        }
+
+        // Agregar filtro por estado del pedido si se proporciona
+        if (status) {
+            filter.status = status; // Filtrar por estado del pedido
+        }
+
+        // Llamar a la función readOrders con el filtro y otros parámetros necesarios
+        const orders = await readOrders(filter);
+
+        // Devolver los resultados de la consulta
         res.status(200).json(orders);
     } catch (error) {
+        // Manejar cualquier error ocurrido durante la ejecución
         res.status(500).json({ message: error.message });
     }
 }
+
 
 async function postOrder(req, res) {
     try {
