@@ -13,11 +13,11 @@ app.use(bodyParser.json());
 const loginRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const bookRoutes = require('./routes/bookRoutes');
-//const orderRoutes = require('./routes/orderRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 app.use('/users', userRoutes);
 app.use('/books', bookRoutes);
 app.use('/login', loginRoutes);
-//app.use('/orders', orderRoutes);
+app.use('/orders', orderRoutes);
 
 // MongoDB Connection
 const uri = process.env.DATABASE_URL;
