@@ -12,17 +12,26 @@ async function readBookByID(bookID, active=true) {
   }
 }
 
-async function readBooks(queryParams, active=true) {
+async function readBooks(queryParams, active = true) {
   try {
-    const books = await Book.find({ ...queryParams, active: active });
-    if (!books) {
-      throw new Error("No se encontraron libros");
-    }
-    return books;
+      // Construir el filtro con los parámetros proporcionados y el estado activo
+      const filter = { ...queryParams, active: active };
+
+      // Realizar la consulta utilizando el filtro
+      const books = await Book.find(filter);
+
+      // Verificar si se encontraron libros
+      if (!books || books.length === 0) {
+          throw new Error('No se encontraron libros');
+      }
+
+      return books;
   } catch (error) {
-    throw new Error("Error al buscar libros");
+      // Manejar cualquier error ocurrido durante la ejecución
+      throw new Error('Error al buscar libros');
   }
 }
+
 
 async function createBook(bookData, userID) {
   try {

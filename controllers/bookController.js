@@ -25,11 +25,10 @@ async function getBooks(req, res) {
   try {
     const queryParams = req.query;
     const active = req.query.active;
-    console.log(active);
+
     const books = await readBooks(queryParams, !active);
     res.status(200).json(books);
   } catch (error) {
-;
     res.status(500).json({ message: error.message });
   }
 }
